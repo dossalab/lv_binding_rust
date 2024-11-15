@@ -115,16 +115,15 @@ pub unsafe extern "C" fn strncat(s1: *mut c_char, s2: *const c_char, n: size_t) 
 
 #[no_mangle]
 pub unsafe extern "C" fn strncmp(s1: *const c_char, s2: *const c_char, n: size_t) -> c_int {
-    let s1 = core::slice::from_raw_parts(s1 as *const c_uchar, n);
-    let s2 = core::slice::from_raw_parts(s2 as *const c_uchar, n);
-
-    for (&a, &b) in s1.iter().zip(s2.iter()) {
-        let val = (a as c_int) - (b as c_int);
-        if a != b || a == 0 {
-            return val;
+    let mut i = 0;
+    while i < n {
+        let c1 = *s1.add(i);
+        let c2 = *s2.add(i);
+        if c1 != c2 || c1 == 0 {
+            return (c1 as c_int) - (c2 as c_int);
         }
+        i += 1;
     }
-
     0
 }
 
